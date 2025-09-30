@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
 export default function Home() {
@@ -12,6 +13,20 @@ export default function Home() {
           height={38}
           priority
         />
+        <Button variant="secondary" size="lg" className="uppercase">
+          Button
+        </Button>
+        <p className="text-center text-2xl text-amber-400 sm:text-left  max-w-[600px]">
+          This is a Next.js project bootstrapped with the{" "}
+          <a
+            className="underline underline-offset-4"
+            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Vercel
+          </a>{" "}
+        </p>
         <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
           <li className="mb-2 tracking-[-.01em]">
             Get started by editing{" "}
