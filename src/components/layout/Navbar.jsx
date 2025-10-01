@@ -145,7 +145,7 @@ export default function Navbar() {
                   Blog
                 </Link>
                 <Link
-                  href="/login"
+                  href="/auth/signin"
                   className="hover:text-yellow-400 transition-colors"
                 >
                   Login
