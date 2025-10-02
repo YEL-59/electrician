@@ -1,6 +1,10 @@
 import Image from "next/image";
 import img1 from "../../../../public/assets/electic.png";
-
+import img2 from "../../../../public/assets/fastbook.png";
+import img3 from "../../../../public/assets/dollar.png";
+import img4 from "../../../../public/assets/hammer.png";
+import img5 from "../../../../public/assets/clock.png";
+import img6 from "../../../../public/assets/lock.png";
 const HeroCategorySection = () => {
   const categories = [
     {
@@ -9,29 +13,29 @@ const HeroCategorySection = () => {
       icon: img1,
     },
     {
-      name: "Lighting Installation",
+      name: "Fast & Easy Booking",
       description: "Installing indoor and outdoor lighting solutions.",
-      icon: img1,
+      icon: img2,
     },
     {
       name: "Wiring and Rewiring",
       description: "Upgrading or replacing electrical wiring systems.",
-      icon: img1,
+      icon: img3,
     },
     {
       name: "Circuit Breaker Services",
       description: "Installing and repairing circuit breakers.",
-      icon: img1,
+      icon: img4,
     },
     {
       name: "Outlet and Switch Installation",
       description: "Adding or replacing electrical outlets and switches.",
-      icon: img1,
+      icon: img5,
     },
     {
       name: "Electrical Inspections",
       description: "Conducting safety inspections for electrical systems.",
-      icon: img1,
+      icon: img6,
     },
   ];
 
@@ -43,13 +47,13 @@ const HeroCategorySection = () => {
             key={index}
             className="bg-transparent p-6 rounded-lg  flex flex-col items-center text-center hover:shadow-lg transition"
           >
-            <div className="mb-4 w-20 h-20 relative">
+            <div className="mb-4 w-10 h-10  relative">
               <Image
                 src={category.icon}
                 alt={category.name}
                 fill
-                className="object-contain"
-                sizes="(max-width: 768px) 60px, (max-width: 1200px) 80px, 100px"
+                className="h-full w-full object-cover"
+                // sizes="(max-width: 768px) 60px, (max-width: 1200px) 80px, 100px"
               />
             </div>
             <h3 className="text-2xl font-semibold">{category.name}</h3>
