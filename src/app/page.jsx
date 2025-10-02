@@ -1,5 +1,9 @@
+"use client";
+
 import Herobg from "@/components/home/sections/Herobg";
+import BlogComponent from "@/components/home/sections/HeroBlog";
 import HeroCategorySection from "@/components/home/sections/HeroCategorySection";
+import HeroElectricianDay from "@/components/home/sections/HeroElectricianDay";
 import FeaturedProviders from "@/components/home/sections/HeroFeaturedProviders";
 import HeroSection from "@/components/home/sections/HeroSection";
 import HeroService from "@/components/home/sections/HeroService";
@@ -18,6 +22,8 @@ export default function Home() {
       <HowItWorks />
       <HeroTestimonialCarouselSection />
       <Herobg />
+      <HeroElectricianDay />
+      <BlogComponent />
     </div>
   );
 }
