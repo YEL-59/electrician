@@ -17,7 +17,7 @@ export default function ClientLayout({ children }) {
 
   return (
     <LenisProvider>
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col pt-32">
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />
