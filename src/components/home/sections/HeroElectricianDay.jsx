@@ -45,8 +45,8 @@ export default function HeroElectricianDay() {
   }, []);
 
   return (
-    <div className="w-full bg-[#E8EDF4] py-12 px-4">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="w-full bg-[#E8EDF4] py-12">
+      <div className="container mx-auto ">
         {/* Top Section */}
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-8">
           <div className="flex-1">
@@ -75,7 +75,7 @@ export default function HeroElectricianDay() {
             alt="Electrician Day Group Photo"
             className="w-full h-64 lg:h-96 object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20" />
+          {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20" /> */}
         </div>
 
         {/* Bottom Section with Card */}
