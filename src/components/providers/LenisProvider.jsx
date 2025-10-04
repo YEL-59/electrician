@@ -6,10 +6,17 @@ import Lenis from "@studio-freight/lenis";
 export default function LenisProvider({ children }) {
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2, // adjust speed
+      duration: 1.2,
       smooth: true,
-      lerp: 0.1, // easing
-      wheelMultiplier: 1,
+      lerp: 0.1,
+      prevent: (node) => {
+        // Prevent Lenis from interfering with navbar and interactive elements
+        return node.classList.contains('navbar') ||
+          node.classList.contains('nav-link') ||
+          node.tagName === 'BUTTON' ||
+          node.tagName === 'A' ||
+          node.closest('nav');
+      }
     });
 
     function raf(time) {
@@ -18,10 +25,7 @@ export default function LenisProvider({ children }) {
     }
 
     requestAnimationFrame(raf);
-
-    return () => {
-      lenis.destroy();
-    };
+    return () => lenis.destroy();
   }, []);
 
   return <>{children}</>;
