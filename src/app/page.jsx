@@ -1,5 +1,3 @@
-"use client";
-
 import Herobg from "@/components/home/sections/Herobg";
 import BlogComponent from "@/components/home/sections/HeroBlog";
 import HeroCategorySection from "@/components/home/sections/HeroCategorySection";

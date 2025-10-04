@@ -1,3 +1,5 @@
+"use client";
+
 import * as z from "zod";
 
 // Signup form validation schema

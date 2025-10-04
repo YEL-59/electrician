@@ -25,7 +25,7 @@ export default function ProfessionalFinder() {
     );
 
     return (
-        <div className="bg-[#FFFBE6]">
+        <div className="bg-[#FFFBE6] relative z-10">
             <section className="container mx-auto px-4 py-10 grid lg:grid-cols-2 gap-8 items-center ">
                 {/* Left Side */}
                 <div className="space-y-6 ">
