@@ -34,9 +34,8 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`bg-primary shadow-lg fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
-        isScrolled ? "shadow-2xl" : ""
-      }`}
+      className={`bg-primary shadow-lg fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${isScrolled ? "shadow-2xl" : ""
+        }`}
     >
       {/* Top Bar with Social Icons */}
       <div className="bg-primary text-black py-0 text-sm border-b border-[#3688ff]">
@@ -143,9 +142,11 @@ export default function Navbar() {
 
               {/* Right: Button */}
               <div>
-                <Button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold">
-                  Claim your listing
-                </Button>
+                <Link href="/claimlistingform" className="inline-block">
+                  <Button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold">
+                    Claim your listing
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
