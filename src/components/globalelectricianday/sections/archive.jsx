@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Link from "next/link";
 
 const photosByYear = {
   2024: [
@@ -195,12 +196,13 @@ export default function Archive() {
               </div>
 
               <div className="flex justify-center pt-4">
-                <Button
+                <Link href={"/globalelectriciandaydetails"} > <Button
                   variant="default"
                   className="bg-blue-600 hover:bg-blue-700 text-white px-8"
                 >
                   Load More
-                </Button>
+                </Button></Link>
+
               </div>
             </TabsContent>
 
