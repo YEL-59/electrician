@@ -122,7 +122,7 @@ export default function Navbar() {
                   Contact
                 </Link>
                 <Link
-                  href="/global-electrician-day"
+                  href="/globalelectricianday"
                   className="hover:text-yellow-400 transition-colors nav-link"
                 >
                   Global Electrician Day™
