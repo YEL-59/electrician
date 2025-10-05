@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import img from "../../../../public/assets/story.png";
 import { CheckCircle2 } from "lucide-react";
+import Link from "next/link";
 
 const Movement = () => {
   return (
@@ -51,9 +52,11 @@ const Movement = () => {
           </div>
 
           <div className="flex flex-wrap gap-4 mt-6">
-            <Button>Register now</Button>
-            <Button variant="outline">Be a sponsor</Button>
-            <Button variant="secondary">Donate Now</Button>
+
+            <Link href={"/froms/RegisterForm"}>   <Button>Register now</Button></Link>
+            <Link href={"/froms/SponsarFrom"}>   <Button variant="outline">Be a sponsor</Button></Link>
+            <Link href={"/froms/PartnerForm"}>     <Button variant="secondary">Donate Now</Button></Link>
+
           </div>
         </div>
 
