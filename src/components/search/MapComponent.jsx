@@ -31,16 +31,28 @@ const MapComponent = ({ providers }) => {
 
         // Add markers for each provider
         providers.forEach((provider) => {
-          window.L.marker([
-            provider.coordinates.lat,
-            provider.coordinates.lng,
-          ]).addTo(map).bindPopup(`
-              <div style="text-align: center;">
-                <strong>${provider.name}</strong><br/>
-                ⭐ ${provider.rating}<br/>
-                📍 ${provider.distance}
-              </div>
-            `);
+          // Check if provider has coordinates before accessing them
+          if (provider.coordinates && provider.coordinates.lat && provider.coordinates.lng) {
+            window.L.marker([
+              provider.coordinates.lat,
+              provider.coordinates.lng,
+            ]).addTo(map).bindPopup(`
+                <div style="text-align: center;">
+                  <strong>${provider.name}</strong><br/>
+                  ⭐ ${provider.rating}<br/>
+                  📍 ${provider.distance}
+                </div>
+              `);
+          } else {
+            // Use default coordinates for providers without specific coordinates
+            window.L.marker([28.5383, -81.3792]).addTo(map).bindPopup(`
+                <div style="text-align: center;">
+                  <strong>${provider.name}</strong><br/>
+                  ⭐ ${provider.rating}<br/>
+                  📍 ${provider.distance}
+                </div>
+              `);
+          }
         });
 
         mapInstanceRef.current = map;
