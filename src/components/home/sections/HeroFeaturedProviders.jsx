@@ -8,9 +8,11 @@ import Clock from "../../../../public/svg/clock";
 import Staricon from "../../../../public/svg/staricon";
 import { useState } from "react";
 import { providersData } from "@/lib/providers";
+import { useFavorites } from "@/components/providers/FavoritesProvider";
 
 const FeaturedProviders = () => {
   const [viewmore, setViewmore] = useState(false);
+  const { isFavorite, toggleFavorite } = useFavorites();
   return (
     <section className="container mx-auto px-4 py-12">
       <div className="text-center mb-8">
@@ -37,10 +39,12 @@ const FeaturedProviders = () => {
                     className="w-full h-full object-cover"
                   />
                   <Button
+                    onClick={() => toggleFavorite(provider.id)}
                     variant="ghost"
                     className="absolute top-2 right-2 rounded-full p-1 bg-[#1B1B1B] hover:bg-white"
+                    aria-label={isFavorite(provider.id) ? "Remove from favorites" : "Add to favorites"}
                   >
-                    <Heart className="w-5 h-5 text-white hover:text-black" />
+                    <Heart className={`w-5 h-5 ${isFavorite(provider.id) ? 'text-red-500' : 'text-white'} hover:text-black`} />
                   </Button>
                 </div>
 
@@ -107,7 +111,7 @@ const FeaturedProviders = () => {
                       <span>{provider.phone}</span>
                     </div>
                     <Link href={`/search/${slug}`}>
-                      <Button className="bg-blue-600 hover:bg-blue-700">View profile</Button>
+                      <Button className="bg-[#194A8C] hover:bg-blue-700">View profile</Button>
                     </Link>
                   </div>
                 </div>
