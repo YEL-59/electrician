@@ -1,8 +1,12 @@
 import React from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { MapPin, Phone, Star, Heart } from "lucide-react";
 
 const ProviderCard = ({ provider }) => {
+  // Create a slug from the provider name and id
+  const slug = `${provider.name.toLowerCase().replace(/\s+/g, '-')}-${provider.id}`;
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden relative w-full hover:shadow-lg transition-shadow">
       <div className="relative h-72 w-full">
@@ -96,9 +100,11 @@ const ProviderCard = ({ provider }) => {
             <Phone className="w-4 h-4" />
             <span>{provider.phone}</span>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700">
-            View profile
-          </Button>
+          <Link href={`/search/${slug}`}>
+            <Button className="bg-blue-600 hover:bg-blue-700">
+              View profile
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
