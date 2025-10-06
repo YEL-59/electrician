@@ -133,6 +133,12 @@ export default function Navbar() {
                   Blog
                 </Link>
                 <Link
+                  href="/wishlist"
+                  className="hover:text-yellow-400 transition-colors nav-link"
+                >
+                  Wishlist
+                </Link>
+                <Link
                   href="/auth/signin"
                   className="hover:text-yellow-400 transition-colors nav-link"
                 >
