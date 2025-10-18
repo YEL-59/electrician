@@ -7,7 +7,11 @@ import { useForm } from "react-hook-form";
 export const useContactImages = () => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["contact-images"],
-    queryFn: () => axiosPublic.get("/contact-images"),
+    //add async await here
+    queryFn: async () => {
+      const res = await axiosPublic.get("/contact-images");
+      return res.data;
+    },
   });
   return { data, isLoading, error };
 };

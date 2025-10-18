@@ -188,6 +188,8 @@ const ContactUsPage = () => {
                     src={images}
                     alt="Professional office setting"
                     className="w-full h-full object-cover"
+                    width={800} // required by Next.js Image
+                    height={900} // adjust as needed
                   />
                 </CardContent>
               </Card>
