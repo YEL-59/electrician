@@ -1,15 +1,15 @@
 'use client'
 
 import { useState, useRef, useEffect, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ArrowLeft, AlertCircle, RefreshCw } from 'lucide-react'
+import { useVerifyOtp, useForgotPassword } from '@/components/hooks/auth.hook'
 
 function OTPVerificationContent() {
     const [otp, setOtp] = useState(['', '', '', '', '', ''])
-    const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState('')
     const [resendLoading, setResendLoading] = useState(false)
     const [resendTimer, setResendTimer] = useState(60)
@@ -17,6 +17,7 @@ function OTPVerificationContent() {
     const [email, setEmail] = useState('user@example.com')
     const inputRefs = useRef([])
     const searchParams = useSearchParams()
+    const { mutate, isPending } = useVerifyOtp()
 
     useEffect(() => {
         if (searchParams) {
@@ -68,7 +69,7 @@ function OTPVerificationContent() {
         inputRefs.current[focusIndex]?.focus()
     }
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault()
         const otpCode = otp.join('')
 
@@ -77,30 +78,19 @@ function OTPVerificationContent() {
             return
         }
 
-        setIsLoading(true)
         setError('')
-
-        try {
-            const response = await fetch('/api/auth/verify-otp', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: email,
-                    otp: otpCode
-                })
-            })
-
-            if (response.ok) {
-                window.location.href = '/auth/success?type=verification'
-            } else {
-                const data = await response.json()
-                setError(data.message || 'Invalid verification code')
+        
+        mutate({
+            email: email,
+            otp: otpCode
+        }, {
+            onSuccess: () => {
+                window.location.href = '/auth/reset-password?email=' + email
+            },
+            onError: (error) => {
+                setError(error?.response?.data?.message || 'Invalid verification code')
             }
-        } catch (err) {
-            setError('Something went wrong. Please try again.')
-        } finally {
-            setIsLoading(false)
-        }
+        })
     }
 
     const handleResend = async () => {
@@ -170,12 +160,12 @@ function OTPVerificationContent() {
 
                     {/* Continue Button */}
                     <Button
-                        type="submit"
-                        disabled={isLoading || otp.join('').length !== 6}
-                        className="w-full h-12 bg-accent-500 hover:bg-accent-600 text-white font-normal text-sm uppercase tracking-wide rounded-md"
-                    >
-                        {isLoading ? "VERIFYING..." : "CONTINUE"}
-                    </Button>
+                    type="submit"
+                    disabled={isPending || otp.join('').length !== 6}
+                    className="w-full h-12 bg-yellow-500 hover:bg-yellow-600 text-white font-normal text-sm uppercase tracking-wide rounded-md"
+                >
+                    {isPending ? "VERIFYING..." : "VERIFY"}
+                </Button>
 
                     {/* Resend Section */}
                     <div className="text-center">

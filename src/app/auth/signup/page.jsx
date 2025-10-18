@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,39 +8,24 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 import { GoogleIcon } from "@/components/icons/SvgIcon";
-import { signupSchema } from "@/components/schemas/signup.schemas";
+import { useSignUp } from "@/components/hooks/auth.hook";
 
 export default function SignUpPage() {
-  const [isLoading, setIsLoading] = useState(false);
+  const { form, mutate, isPending } = useSignUp();
 
-  const form = useForm({
-    resolver: zodResolver(signupSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    },
-  });
+  const onSubmit = (values) => {
+    // Convert confirmPassword to password_confirmation for API
+    const payload = {
+      ...values,
+      password_confirmation: values.password_confirmation,
+    };
+    //delete payload.password_confirmation;
 
-  const onSubmit = async (values) => {
-    setIsLoading(true);
-    try {
-      // Handle form submission
-      console.log("Form submitted:", values);
-      // Add your API call here
-    } catch (error) {
-      console.error("Sign up error:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    mutate(payload);
   };
 
   return (
@@ -113,14 +97,31 @@ export default function SignUpPage() {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="password_confirmation"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Confirm Password"
+                      {...field}
+                      className="border-0 border-b border-gray-300 rounded-none px-0 py-3 text-text-primary placeholder-text-secondary focus:border-primary-500 focus:ring-0 bg-transparent"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {/* Create Account Button */}
             <Button
               type="submit"
-              disabled={isLoading}
-              className="w-full h-12 bg-accent-500 hover:bg-accent-600 text-white font-normal text-sm uppercase tracking-wide rounded-md"
+              disabled={isPending}
+              className="w-full h-12 bg-yellow-500 hover:bg-yellow-600 text-white font-normal text-sm uppercase tracking-wide rounded-md"
             >
-              {isLoading ? "CREATING ACCOUNT..." : "CREATE ACCOUNT"}
+              {isPending ? "CREATING ACCOUNT..." : "CREATE ACCOUNT"}
             </Button>
 
             {/* Or Divider */}

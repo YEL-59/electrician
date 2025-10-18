@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,37 +8,22 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 import { GoogleIcon } from "@/components/icons/SvgIcon";
-import { signinSchema } from "@/components/schemas/signup.schemas";
+import { useSignIn } from "@/components/hooks/auth.hook";
+import { usePrivacyPolicies } from "@/components/hooks/system.hook";
 
 export default function SignInPage() {
-  const [isLoading, setIsLoading] = useState(false);
+  const { form, mutate, isPending } = useSignIn();
+  const { data, isLoading, error } = usePrivacyPolicies();
+  console.log("data", data);
+  console.log("isLoading", isLoading);
+  console.log("error", error);
 
-  const form = useForm({
-    resolver: zodResolver(signinSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
-
-  const onSubmit = async (values) => {
-    setIsLoading(true);
-    try {
-      // Handle form submission
-      console.log("Form submitted:", values);
-      // Add your API call here
-    } catch (error) {
-      console.error("Sign in error:", error);
-    } finally {
-      setIsLoading(false);
-    }
+  const onSubmit = (values) => {
+    mutate(values);
   };
 
   return (
@@ -107,10 +91,10 @@ export default function SignInPage() {
             {/* Sign In Button */}
             <Button
               type="submit"
-              disabled={isLoading}
-              className="w-full h-12 bg-accent-500 hover:bg-accent-600 text-white font-normal text-sm uppercase tracking-wide rounded-md"
+              disabled={isPending}
+              className="w-full h-12 bg-yellow-500 hover:bg-yellow-600 text-white font-normal text-sm uppercase tracking-wide rounded-md"
             >
-              {isLoading ? "SIGNING IN..." : "SIGN IN"}
+              {isPending ? "SIGNING IN..." : "SIGN IN"}
             </Button>
 
             {/* Or Divider */}

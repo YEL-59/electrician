@@ -11,47 +11,24 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 import { ArrowLeft, CheckCircle } from "lucide-react";
-import { forgotPasswordSchema } from "@/components/schemas/signup.schemas";
+import { useForgotPassword } from "@/components/hooks/auth.hook";
+import { useRouter } from "next/navigation";
 
 export default function ForgotPasswordPage() {
-  const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const router = useRouter();
+  const { form, mutate, isPending } = useForgotPassword();
 
-  const form = useForm({
-    resolver: zodResolver(forgotPasswordSchema),
-    defaultValues: {
-      email: "",
-    },
-  });
-
-  const onSubmit = async (values) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch("/api/auth/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
-
-      if (response.ok) {
+  const onSubmit = (values) => {
+    mutate(values, {
+      onSuccess: () => {
         setIsSuccess(true);
-      } else {
-        const data = await response.json();
-        form.setError("email", {
-          message: data.message || "Failed to send reset email",
-        });
+        // Optionally redirect to OTP verification page
+        // router.push(`/auth/otp-verification?email=${values.email}`);
       }
-    } catch (err) {
-      form.setError("email", {
-        message: "Something went wrong. Please try again.",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
 
   if (isSuccess) {
@@ -152,10 +129,10 @@ export default function ForgotPasswordPage() {
             {/* Continue Button */}
             <Button
               type="submit"
-              disabled={isLoading}
-              className="w-full h-12 bg-yellow-600 hover:bg-yellow-600 text-white font-normal text-sm uppercase tracking-wide rounded-md"
+              disabled={isPending}
+              className="w-full h-12 bg-yellow-500 hover:bg-yellow-600 text-white font-normal text-sm uppercase tracking-wide rounded-md"
             >
-              {isLoading ? "SENDING..." : "CONTINUE"}
+              {isPending ? "SENDING..." : "SEND RESET LINK"}
             </Button>
 
             {/* Footer Link */}
