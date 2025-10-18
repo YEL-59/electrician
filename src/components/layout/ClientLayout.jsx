@@ -6,6 +6,7 @@ import LenisProvider from "../providers/LenisProvider";
 import { FavoritesProvider } from "../providers/FavoritesProvider";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import { Toaster } from "react-hot-toast";
 
 export default function ClientLayout({ children }) {
   const [mounted, setMounted] = useState(false);
@@ -27,6 +28,7 @@ export default function ClientLayout({ children }) {
             <main className="flex-1">{children}</main>
             <Footer />
           </div>
+          <Toaster position="top-right" />
         </FavoritesProvider>
       </LenisProvider>
     </QueryClientProvider>

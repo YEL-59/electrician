@@ -18,6 +18,15 @@ import {
   YoutubeIcon,
   PinterestIcon,
 } from "@/components/icons/SvgIcon";
+import { useRouter } from "next/navigation";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { HeartIcon } from "lucide-react";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -32,10 +41,28 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const [user, setUser] = useState(null);
+  const router = useRouter();
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
+    if (token && storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+    router.push("/auth/signin");
+  };
+
   return (
     <nav
-      className={`bg-primary shadow-lg fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${isScrolled ? "shadow-2xl" : ""
-        }`}
+      className={`bg-primary shadow-lg fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
+        isScrolled ? "shadow-2xl" : ""
+      }`}
     >
       {/* Top Bar with Social Icons */}
       <div className="bg-primary text-black py-0 text-sm border-b border-[#3688ff]">
@@ -136,14 +163,42 @@ export default function Navbar() {
                   href="/wishlist"
                   className="hover:text-yellow-400 transition-colors nav-link"
                 >
-                  Wishlist
+                  <HeartIcon className="w-7 h-7" />
                 </Link>
-                <Link
-                  href="/auth/signin"
-                  className="hover:text-yellow-400 transition-colors nav-link"
-                >
-                  Login
-                </Link>
+                {/* Show Login or Avatar */}
+                {!user ? (
+                  <Link
+                    href="/auth/signin"
+                    className="hover:text-yellow-400 transition-colors"
+                  >
+                    Login
+                  </Link>
+                ) : (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Avatar className="cursor-pointer w-8 h-8">
+                        <AvatarImage
+                          src={user.avatar || "/default-avatar.png"}
+                        />
+                        <AvatarFallback className="bg-yellow-400 text-black capitalize font-bold">
+                          {user.name[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-40">
+                      {/* Show user email */}
+                      <DropdownMenuItem className="text-sm text-gray-500">
+                        {user.email}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => router.push("/profile")}>
+                        Profile
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={handleLogout}>
+                        Logout
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
               </div>
 
               {/* Right: Button */}

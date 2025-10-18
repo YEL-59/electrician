@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -17,14 +19,15 @@ import { useSignUp } from "@/components/hooks/auth.hook";
 export default function SignUpPage() {
   const { form, mutate, isPending } = useSignUp();
 
+  // state for show/hide password
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const onSubmit = (values) => {
-    // Convert confirmPassword to password_confirmation for API
     const payload = {
       ...values,
       password_confirmation: values.password_confirmation,
     };
-    //delete payload.password_confirmation;
-
     mutate(payload);
   };
 
@@ -85,31 +88,61 @@ export default function SignUpPage() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Password"
-                      {...field}
-                      className="border-0 border-b border-gray-300 rounded-none px-0 py-3 text-text-primary placeholder-text-secondary focus:border-primary-500 focus:ring-0 bg-transparent"
-                    />
-                  </FormControl>
+                  <div className="relative">
+                    <FormControl>
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Password"
+                        {...field}
+                        className="border-0 border-b border-gray-300 rounded-none px-0 py-3 pr-10 text-text-primary placeholder-text-secondary focus:border-primary-500 focus:ring-0 bg-transparent"
+                      />
+                    </FormControl>
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            {/* Confirm Password Input */}
             <FormField
               control={form.control}
               name="password_confirmation"
               render={({ field }) => (
                 <FormItem>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Confirm Password"
-                      {...field}
-                      className="border-0 border-b border-gray-300 rounded-none px-0 py-3 text-text-primary placeholder-text-secondary focus:border-primary-500 focus:ring-0 bg-transparent"
-                    />
-                  </FormControl>
+                  <div className="relative">
+                    <FormControl>
+                      <Input
+                        type={showConfirmPassword ? "text" : "password"}
+                        placeholder="Confirm Password"
+                        {...field}
+                        className="border-0 border-b border-gray-300 rounded-none px-0 py-3 pr-10 text-text-primary placeholder-text-secondary focus:border-primary-500 focus:ring-0 bg-transparent"
+                      />
+                    </FormControl>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                      className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -135,18 +168,15 @@ export default function SignUpPage() {
             <Button
               type="button"
               variant="outline"
-              className="w-full h-12 border border-gray-300 bg-white  hover:bg-gray-50 text-text-primary font-medium rounded-md hover:text-text-primary flex items-center justify-center space-x-3"
+              className="w-full h-12 border border-gray-300 bg-white hover:bg-gray-50 text-text-primary font-medium rounded-md hover:text-text-primary flex items-center justify-center space-x-3"
             >
-              {/* Google Logo */}
-              <div className="flex items-center space-x-1">
-                <GoogleIcon />
-              </div>
+              <GoogleIcon />
               <span>Sign in with Google</span>
             </Button>
 
             {/* Footer Link */}
             <div className="text-center text-sm text-text-secondary">
-              Allready have an account?{" "}
+              Already have an account?{" "}
               <Link
                 href="/auth/signin"
                 className="text-primary-500 hover:text-primary-600 font-medium"
