@@ -1,9 +1,7 @@
 "use client";
 
 import React from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,39 +17,24 @@ import {
 } from "@/components/ui/form";
 import img from "../../../public/assets/contact.png";
 import Image from "next/image";
-
-const formSchema = z.object({
-  firstName: z.string().min(2, "First name must be at least 2 characters"),
-  lastName: z.string().min(2, "Last name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email address"),
-  phone: z.string().min(10, "Please enter a valid phone number"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
-  privacy: z.boolean().refine((val) => val === true, {
-    message: "You must agree to the privacy policy",
-  }),
-});
+import { useContact, useContactImages } from "../hooks/contact.hook";
 
 const ContactUsPage = () => {
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      message: "",
-      privacy: false,
-    },
-  });
+  const { form, mutate, isLoading } = useContact();
+  const {
+    data: contactImages,
+    isLoading: isLoadingImages,
+    error: errorImages,
+  } = useContactImages();
 
+  const images = contactImages?.data?.[0]?.image_url || img;
+
+  console.log(images);
   const onSubmit = (data) => {
     console.log(data);
-    // Handle form submission here
-    // Example:
-    // await fetch('/api/contact', {
-    //   method: 'POST',
-    //   body: JSON.stringify(data)
-    // });
+    //here concat e first name and lastname
+    data.name = `${data.firstName} ${data.lastName}`;
+    mutate(data);
   };
 
   return (
@@ -161,7 +144,7 @@ const ContactUsPage = () => {
 
                 <FormField
                   control={form.control}
-                  name="privacy"
+                  name="terms"
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                       <FormControl>
@@ -202,7 +185,7 @@ const ContactUsPage = () => {
               <Card className="overflow-hidden border-0 shadow-2xl rounded-2xl p-0">
                 <CardContent className="p-0">
                   <Image
-                    src={img}
+                    src={images}
                     alt="Professional office setting"
                     className="w-full h-full object-cover"
                   />
