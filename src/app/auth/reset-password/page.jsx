@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, Suspense, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,62 +12,43 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Eye, EyeOff, ArrowLeft, AlertCircle } from "lucide-react";
-import { resetPasswordSchema } from "@/components/schemas/signup.schemas";
+import { useResetPassword } from "@/components/hooks/auth.hook";
 
 function ResetPasswordContent() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [token, setToken] = useState("");
+  const [email, setEmail] = useState("");
   const searchParams = useSearchParams();
-
-  const form = useForm({
-    resolver: zodResolver(resetPasswordSchema),
-    defaultValues: {
-      password: "",
-      confirmPassword: "",
-    },
-  });
+  const router = useRouter();
+  const { form, mutate, isPending } = useResetPassword();
 
   useEffect(() => {
     if (searchParams) {
-      const tokenParam = searchParams.get("token");
-      if (tokenParam) {
-        setToken(tokenParam);
+      const emailParam = searchParams.get("email");
+      if (emailParam) {
+        setEmail(emailParam);
       }
     }
   }, [searchParams]);
 
-  const onSubmit = async (values) => {
-    setIsLoading(true);
+  const onSubmit = (values) => {
     setError("");
-
-    try {
-      const response = await fetch("/api/auth/reset-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          token,
-          password: values.password,
-        }),
-      });
-
-      if (response.ok) {
-        window.location.href = "/auth/success?type=password-reset";
-      } else {
-        const data = await response.json();
-        setError(data.message || "Failed to reset password");
+    
+    mutate({
+      email,
+      password: values.password,
+      password_confirmation: values.confirmPassword
+    }, {
+      onSuccess: () => {
+        router.push("/auth/success?type=password-reset");
+      },
+      onError: (error) => {
+        setError(error?.response?.data?.message || "Failed to reset password");
       }
-    } catch (err) {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
 
   //use !token to check if the token is valid
@@ -211,10 +192,10 @@ function ResetPasswordContent() {
             {/* Update Password Button */}
             <Button
               type="submit"
-              disabled={isLoading}
-              className="w-full h-12 bg-accent-500 hover:bg-accent-600 text-white font-normal text-sm uppercase tracking-wide rounded-md"
+              disabled={isPending}
+              className="w-full h-12 bg-yellow-500 hover:bg-yellow-600 text-white font-normal text-sm uppercase tracking-wide rounded-md"
             >
-              {isLoading ? "UPDATING..." : "UPDATE PASSWORD"}
+              {isPending ? "RESETTING..." : "RESET PASSWORD"}
             </Button>
 
             {/* Back to Sign In */}
