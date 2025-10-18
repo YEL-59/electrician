@@ -35,21 +35,21 @@ const sendOtpSchema = z.object({
 
 const resetPasswordSchema = z
   .object({
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z
+    new_password: z.string().min(6, "Password must be at least 6 characters"),
+    new_password_confirmation: z
       .string()
       .min(6, "Password must be at least 6 characters"),
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine((data) => data.new_password === data.new_password_confirmation, {
     message: "Passwords do not match",
-    path: ["confirmPassword"],
+    path: ["new_password_confirmation"],
   });
 
 export const useSignUp = () => {
   const router = useRouter();
 
   const form = useForm({
-    resolver: zodResolver(signUpSchema),
+    // resolver: zodResolver(signUpSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -70,15 +70,12 @@ export const useSignUp = () => {
       return res.data;
     },
     onSuccess: (data) => {
-      if (data?.token) {
-        toast.success("User registered successfully");
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user || {}));
-        router.push("/auth/signin");
-      } else {
-        toast.error(data?.message || "Failed to register user");
-      }
+      // Always navigate after a successful registration (201),
+      // some APIs don't return a token on register
+      toast.success(data?.message || "User registered successfully");
+      router.push("/auth/signin");
     },
+
     onError: (error) => {
       const message =
         error?.response?.data?.message || "Failed to register user";
@@ -100,7 +97,7 @@ export const useSignIn = () => {
   const redirectUrl = searchParams.get("redirect");
 
   const form = useForm({
-    //  resolver: zodResolver(signInSchema),
+    resolver: zodResolver(signInSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -109,16 +106,19 @@ export const useSignIn = () => {
   //login route
   const { mutate, isPending } = useMutation({
     mutationFn: async (credentials) => {
-      // await axiosPublic.get("/sanctum/csrf-cookie", { withCredentials: true });
-
+      console.log("credentials", credentials);
       const res = await axiosPublic.post("/login", credentials, {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
+          ...(process.env.NEXT_PUBLIC_API_AUTH_HEADER
+            ? { Authorization: process.env.NEXT_PUBLIC_API_AUTH_HEADER }
+            : {}),
         },
-        // withCredentials: false,
+        withCredentials: false,
       });
 
+     // console.log(res.data);
       return res.data;
     },
     onSuccess: (data) => {
@@ -137,21 +137,16 @@ export const useSignIn = () => {
       }
     },
     onError: (error) => {
-      console.log("error", error);
+      // Extract message from API response
       const message =
-        error?.response?.data?.message ||
-        error?.response?.data?.error ||
-        error.message ||
-        "Failed to sign in";
+        error?.response?.data?.message || "Failed to register user";
 
-      // Handle email-specific error
-      if (
-        typeof message === "string" &&
-        message.toLowerCase().includes("email")
-      ) {
+      // ✅ Always show toast
+      toast.error(message);
+
+      // Optionally also mark the field error
+      if (message.toLowerCase().includes("email")) {
         form.setError("email", { message });
-      } else {
-        toast.error(message);
       }
     },
   });
@@ -198,12 +193,16 @@ export const useForgotPassword = () => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (payload) => {
-      const res = await axiosPublic.post("/forgot-password", payload, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      });
+      const res = await axiosPublic.post(
+        "/password/forgot",
+        { email: payload.email },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        }
+      );
       return res.data;
     },
     onSuccess: (data, variables) => {
@@ -226,7 +225,7 @@ export const useVerifyOtp = () => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (payload) => {
-      const res = await axiosPublic.post("/verify-otp", payload, {
+      const res = await axiosPublic.post("/password/verify-otp", payload, {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -255,19 +254,27 @@ export const useResetPassword = () => {
   const form = useForm({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
-      password: "",
-      confirmPassword: "",
+      new_password: "",
+      new_password_confirmation: "",
     },
   });
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (payload) => {
-      const res = await axiosPublic.post("/reset-password", payload, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
+      const res = await axiosPublic.post(
+        "/password/reset",
+        {
+          email: payload.email,
+          new_password: payload.new_password,
+          new_password_confirmation: payload.new_password_confirmation,
         },
-      });
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        }
+      );
       return res.data;
     },
     onSuccess: (data) => {

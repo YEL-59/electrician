@@ -38,15 +38,17 @@ export const forgotPasswordSchema = z.object({
 // Reset password schema
 export const resetPasswordSchema = z
   .object({
-    password: z
+    new_password: z
       .string()
       .min(6, "Password must be at least 6 characters")
       .max(100, "Password is too long"),
-    confirmPassword: z.string().min(1, "Please confirm your password"),
+    new_password_confirmation: z
+      .string()
+      .min(1, "Please confirm your password"),
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine((data) => data.new_password === data.new_password_confirmation, {
     message: "Passwords don't match",
-    path: ["confirmPassword"],
+    path: ["new_password_confirmation"],
   });
 
 // OTP verification schema

@@ -36,67 +36,12 @@ function ResetPasswordContent() {
 
   const onSubmit = (values) => {
     setError("");
-    
     mutate({
       email,
-      password: values.password,
-      password_confirmation: values.confirmPassword
-    }, {
-      onSuccess: () => {
-        router.push("/auth/success?type=password-reset");
-      },
-      onError: (error) => {
-        setError(error?.response?.data?.message || "Failed to reset password");
-      }
+      new_password: values.new_password,
+      new_password_confirmation: values.new_password_confirmation,
     });
   };
-
-  //use !token to check if the token is valid
-  if (token) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white p-4">
-        <div className="w-full max-w-xl border border-gray-300 rounded-lg p-8">
-          {/* Header */}
-          <div className="text-start mb-8">
-            <h1 className="text-3xl font-normal text-text-primary mb-2">
-              Invalid Reset Link
-            </h1>
-            <p className="text-text-secondary">
-              This password reset link is invalid or has expired
-            </p>
-          </div>
-
-          <div className="text-center space-y-4">
-            <div className="w-16 h-16 mx-auto bg-red-100 rounded-full flex items-center justify-center">
-              <AlertCircle className="h-8 w-8 text-red-600" />
-            </div>
-
-            <p className="text-text-secondary">
-              Please request a new password reset link.
-            </p>
-
-            <div className="space-y-3">
-              <Link href="/auth/forgot-password">
-                <Button className="w-full h-12 bg-accent-500 hover:bg-accent-600 text-white font-normal text-sm uppercase tracking-wide rounded-md">
-                  Request New Link
-                </Button>
-              </Link>
-
-              <Link href="/auth/signin">
-                <Button
-                  variant="ghost"
-                  className="w-full h-12 text-text-secondary hover:text-text-primary font-medium rounded-md"
-                >
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Back to Sign In
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white p-4">
@@ -126,7 +71,7 @@ function ResetPasswordContent() {
             {/* New Password Input */}
             <FormField
               control={form.control}
-              name="password"
+              name="new_password"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
@@ -158,7 +103,7 @@ function ResetPasswordContent() {
             {/* Confirm Password Input */}
             <FormField
               control={form.control}
-              name="confirmPassword"
+              name="new_password_confirmation"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
