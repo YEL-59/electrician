@@ -1,6 +1,40 @@
 import img from "../../../../public/assets/story.png";
 import Image from "next/image";
-const Mission = () => {
+// ✅ Fetch data server-side
+async function getMission() {
+  try {
+    const res = await fetch(
+      "https://verbalmdt.softvencefsd.xyz/api/global-electrician-days/",
+      {
+        cache: "no-store", // uncomment for always fresh data (no cache)
+        // next: { revalidate: 60 }, // revalidate every 60s
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch global electrician data");
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching global electrician data:", error);
+    return null;
+  }
+}
+
+// ✅ Server Component
+const Mission = async () => {
+  const data = await getMission();
+  const mission = data?.data?.[0]?.mission;
+
+  if (!mission) {
+    return (
+      <div className="text-center py-20 text-gray-500">
+        Failed to load mission data.
+      </div>
+    );
+  }
   return (
     <div className=" bg-[#E6EDFF] py-12 px-4 sm:px-6 lg:px-8">
       <div className=" container mx-auto grid lg:grid-cols-2 gap-8 lg:gap-12 p-8 md:p-12 lg:p-16 ">
@@ -11,7 +45,7 @@ const Mission = () => {
             <div className="w-full h-full bg-gradient-to-br from-purple-500 via-purple-600 to-indigo-600 flex items-center justify-center">
               <div className="text-center text-white p-8 ">
                 <Image
-                  src={img}
+                  src={mission.image}
                   alt="Celebration Image"
                   layout="fill"
                   objectFit="cover  "
@@ -25,15 +59,11 @@ const Mission = () => {
         <div className="space-y-6">
           <div>
             <h2 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-6">
-              Our Mission
+              {mission.name}
             </h2>
 
             <div className="space-y-4 text-gray-700 leading-relaxed">
-              <p>
-                To honor electricians, empower them through community
-                recognition, and inspire the next generation to pursue
-                meaningful careers in the electrical trade.
-              </p>
+              <p>{mission.description}</p>
               {/* 
               <div className="my-6">
                 <Badge
@@ -43,23 +73,6 @@ const Mission = () => {
                   📄 Instrument #118833216, Pages 1-24
                 </Badge>
               </div> */}
-
-              <p>
-                Global Electrician Day also seeks to build bridges among
-                communities, learning institutions, industry partners, and
-                elected officials, fostering total community solidification
-                around the value of skilled trades. We believe that by
-                connecting all stakeholders, we can elevate the electrical
-                profession, strengthen the workforce pipeline, and ensure that
-                every young person understands the opportunities available in
-                this essential field.
-              </p>
-
-              <p>
-                Electricians light the world—keeping homes, hospitals,
-                businesses, and infrastructure powered safely every day. Their
-                work deserves respect, celebration, and gratitude.
-              </p>
             </div>
           </div>
         </div>
