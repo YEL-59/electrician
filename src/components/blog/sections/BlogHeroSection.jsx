@@ -4,46 +4,41 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
-const BlogHeroSection = () => {
-  const featuredPost = {
-    id: 1,
-    slug: "most-popular-design-systems-2022",
-    image:
-      "https://images.unsplash.com/photo-1531973576160-7125cd663d86?w=800&h=600&fit=crop",
-    title: "Most popular design systems to learn from in 2022",
-    description:
-      "Here to know the secrets of handwriting a 21st down intro in 3x super fluid winning brands? We broke down all the expressions of complex conditions to understand the models of complex processes or relationships.",
-  };
+// ✅ Server-side fetch function
+async function getBlogHeroSection() {
+  try {
+    const res = await fetch(
+      "https://verbalmdt.softvencefsd.xyz/api/api-blogs",
+      {
+        cache: "no-store", // disables caching, ensures fresh data
+      }
+    );
 
-  const blogPosts = [
-    {
-      id: 2,
-      slug: "understanding-accessibility-better",
-      image:
-        "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=300&fit=crop",
-      title: "Understanding accessibility makes you a better",
-      description:
-        "Our platform helps Internet companies turn enterprise and plumbers",
-    },
-    {
-      id: 3,
-      slug: "understanding-accessibility-better-2",
-      image:
-        "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop",
-      title: "Understanding accessibility makes you a better",
-      description:
-        "Our platform helps Internet companies turn enterprise and plumbers",
-    },
-    {
-      id: 4,
-      slug: "understanding-accessibility-better-3",
-      image:
-        "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=400&h=300&fit=crop",
-      title: "Understanding accessibility makes you a better",
-      description:
-        "Our platform helps Internet companies turn enterprise and plumbers",
-    },
-  ];
+    if (!res.ok) throw new Error("Failed to fetch blog hero data");
+
+    const data = await res.json();
+    return data?.data || [];
+  } catch (error) {
+    console.error("Error fetching blog hero data:", error);
+    return [];
+  }
+}
+
+// ✅ Server Component
+const BlogHeroSection = async () => {
+  const blogs = await getBlogHeroSection();
+
+  if (!blogs.length) {
+    return (
+      <div className="text-center py-20 text-gray-500">
+        Failed to load blog data.
+      </div>
+    );
+  }
+
+  // Take first 4 blogs (1 featured + 3 regular)
+  const [featuredPost, ...rest] = blogs.slice(0, 4);
+  const blogPosts = rest;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 py-16 px-4 sm:px-6 lg:px-8">
@@ -53,12 +48,12 @@ const BlogHeroSection = () => {
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Featured Large Card */}
-          <Link href={`/blog/${featuredPost.slug}`}>
-            <Card className="overflow-hidden border-0 p-0 shadow-none  cursor-pointer bg-transparent hover:shadow-xl transition-shadow duration-300">
+          {/* ✅ Featured Large Card */}
+          <Link href={`/blog/${featuredPost.id}`}>
+            <Card className="overflow-hidden border-0 p-0 shadow-none cursor-pointer bg-transparent hover:shadow-xl transition-shadow duration-300">
               <div className="relative h-80">
                 <img
-                  src={featuredPost.image}
+                  src={featuredPost.image_url}
                   alt={featuredPost.title}
                   className="w-full h-full object-cover rounded-lg hover:scale-105 transition-transform duration-300"
                 />
@@ -68,7 +63,7 @@ const BlogHeroSection = () => {
                   {featuredPost.title}
                 </h2>
                 <p className="text-gray-600 mb-4 leading-relaxed">
-                  {featuredPost.description}
+                  {featuredPost.description?.slice(0, 150)}...
                 </p>
                 <Button
                   variant="ghost"
@@ -81,15 +76,15 @@ const BlogHeroSection = () => {
             </Card>
           </Link>
 
-          {/* Right Column - Smaller Cards */}
+          {/* ✅ Right Column - Smaller Cards */}
           <div className="flex flex-col gap-6">
             {blogPosts.map((post) => (
-              <Link key={post.id} href={`/blog/${post.slug}`}>
+              <Link key={post.id} href={`/blog/${post.id}`}>
                 <Card className="overflow-hidden border-0 p-0 shadow-none bg-transparent hover:shadow-xl transition-shadow duration-300 cursor-pointer">
                   <div className="flex flex-col sm:flex-row">
                     <div className="relative h-48 sm:h-auto sm:w-48 flex-shrink-0">
                       <img
-                        src={post.image}
+                        src={post.image_url}
                         alt={post.title}
                         className="w-full h-full object-cover"
                       />
@@ -99,7 +94,7 @@ const BlogHeroSection = () => {
                         {post.title}
                       </h3>
                       <p className="text-sm text-gray-600 mb-3">
-                        {post.description}
+                        {post.description?.slice(0, 120)}...
                       </p>
                       <Button
                         variant="ghost"
