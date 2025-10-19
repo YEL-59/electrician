@@ -1,120 +1,93 @@
 "use client";
+
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useState } from "react";
 import Link from "next/link";
 
+const normalizeUrl = (u) => (u || "").replace(/[`\"]/g, "").trim();
+const normalizeBlog = (b) => ({
+  ...b,
+  image_url: normalizeUrl(b?.image_url || b?.image || ""),
+  description: b?.description || b?.details || "",
+});
+
+const ITEMS_PER_PAGE = 8;
+
 const AllBlogGrid = () => {
+  const [blogs, setBlogs] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 6;
+  const [loading, setLoading] = useState(true);
 
-  const blogPosts = [
-    {
-      id: 1,
-      slug: "most-popular-design-systems-2022",
-      image:
-        "https://images.unsplash.com/photo-1531973576160-7125cd663d86?w=400&h=300&fit=crop",
-      title: "Most popular design systems to learn from in 2022",
-      description:
-        "Our platform helps licensed companies from electricians and plumbers",
-    },
-    {
-      id: 2,
-      slug: "understanding-accessibility-better",
-      image:
-        "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=300&fit=crop",
-      title: "Understanding accessibility makes you a better",
-      description:
-        "Our platform helps licensed companies from electricians and plumbers",
-    },
-    {
-      id: 3,
-      slug: "15-best-tools-build-website",
-      image:
-        "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=400&h=300&fit=crop",
-      title: "15 best tools that will help you build your website",
-      description:
-        "Our platform helps licensed companies from electricians and plumbers",
-    },
-    {
-      id: 4,
-      slug: "understanding-accessibility-better-2",
-      image:
-        "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=300&fit=crop",
-      title: "Understanding accessibility makes you a better",
-      description:
-        "Our platform helps licensed companies from electricians and plumbers",
-    },
-    {
-      id: 5,
-      slug: "most-popular-design-systems-2022-2",
-      image:
-        "https://images.unsplash.com/photo-1531973576160-7125cd663d86?w=400&h=300&fit=crop",
-      title: "Most popular design systems to learn from in 2022",
-      description:
-        "Our platform helps licensed companies from electricians and plumbers",
-    },
-    {
-      id: 6,
-      slug: "understanding-accessibility-better-3",
-      image:
-        "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=300&fit=crop",
-      title: "Understanding accessibility makes you a better",
-      description:
-        "Our platform helps licensed companies from electricians and plumbers",
-    },
-    {
-      id: 7,
-      slug: "15-best-tools-build-website-2",
-      image:
-        "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=400&h=300&fit=crop",
-      title: "15 best tools that will help you build your website",
-      description:
-        "Our platform helps licensed companies from electricians and plumbers",
-    },
-    {
-      id: 8,
-      slug: "understanding-accessibility-better-4",
-      image:
-        "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=300&fit=crop",
-      title: "Understanding accessibility makes you a better",
-      description:
-        "Our platform helps licensed companies from electricians and plumbers",
-    },
-  ];
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const res = await fetch("/api/api-blogs", {
+          cache: "no-store",
+        });
+        const data = await res.json();
+        if (data?.data) {
+          // Skip the first 4 blogs (already shown in hero section)
+          const remaining = data.data.slice(4).map(normalizeBlog);
+          setBlogs(remaining);
+        }
+      } catch (error) {
+        console.error("Error fetching blogs:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
+    fetchBlogs();
+  }, []);
+
+  // Pagination logic
+  const totalPages = Math.ceil(blogs.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedBlogs = blogs.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   const handlePrevious = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
   };
 
   const handleNext = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
   };
+
+  const handlePageChange = (page) => setCurrentPage(page);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh] text-gray-500">
+        Loading blogs...
+      </div>
+    );
+  }
+
+  if (!blogs.length) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh] text-gray-500">
+        No blogs found.
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 py-4 px-4 sm:px-6 lg:px-8">
       <div className="container mx-auto">
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-12">
-          Our All Blog
+          Our All Blogs
         </h1>
 
-        {/* Blog Grid */}
+        {/* ✅ Blog Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {blogPosts.map((post) => (
-            <Link key={post.id} href={`/blog/${post.slug}`}>
+          {paginatedBlogs.map((post) => (
+            <Link key={post.id} href={`/blog/${post.id}`}>
               <Card className="overflow-hidden border-0 p-0 shadow-none transition-all duration-300 hover:-translate-y-1 bg-transparent cursor-pointer">
                 <div className="relative h-48 overflow-hidden">
                   <img
-                    src={post.image}
+                    src={normalizeUrl(post.image_url)}
                     alt={post.title}
                     className="w-full h-full rounded-lg object-cover transition-transform duration-300 hover:scale-110"
                   />
@@ -135,47 +108,49 @@ const AllBlogGrid = () => {
           ))}
         </div>
 
-        {/* Pagination */}
-        <div className="flex items-center justify-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handlePrevious}
-            disabled={currentPage === 1}
-            className="h-10 w-10 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
+        {/* ✅ Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handlePrevious}
+              disabled={currentPage === 1}
+              className="h-10 w-10 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
 
-          {[...Array(totalPages)].map((_, index) => {
-            const page = index + 1;
-            return (
-              <Button
-                key={page}
-                variant={currentPage === page ? "default" : "ghost"}
-                size="icon"
-                onClick={() => handlePageChange(page)}
-                className={`h-10 w-10 rounded-full font-medium ${
-                  currentPage === page
-                    ? "bg-blue-600 text-white hover:bg-blue-700"
-                    : "hover:bg-gray-200 text-gray-700"
-                }`}
-              >
-                {page.toString().padStart(2, "0")}
-              </Button>
-            );
-          })}
+            {[...Array(totalPages)].map((_, index) => {
+              const page = index + 1;
+              return (
+                <Button
+                  key={page}
+                  variant={currentPage === page ? "default" : "ghost"}
+                  size="icon"
+                  onClick={() => handlePageChange(page)}
+                  className={`h-10 w-10 rounded-full font-medium ${
+                    currentPage === page
+                      ? "bg-blue-600 text-white hover:bg-blue-700"
+                      : "hover:bg-gray-200 text-gray-700"
+                  }`}
+                >
+                  {page.toString().padStart(2, "0")}
+                </Button>
+              );
+            })}
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleNext}
-            disabled={currentPage === totalPages}
-            className="h-10 w-10 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </Button>
-        </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleNext}
+              disabled={currentPage === totalPages}
+              className="h-10 w-10 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

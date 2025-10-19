@@ -2,7 +2,9 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { User } from "lucide-react";
 
-const BlogDetailPage = ({ slug }) => {
+const normalizeUrl = (u) => (u || "").replace(/[`\"]/g, "").trim();
+
+const BlogDetailPage = ({ blog }) => {
   const recentPosts = [
     {
       id: 1,
@@ -39,8 +41,8 @@ const BlogDetailPage = ({ slug }) => {
       {/* Hero Image */}
       <div className="w-full h-64 md:h-96 bg-gray-200 overflow-hidden">
         <img
-          src="https://images.unsplash.com/photo-1531973576160-7125cd663d86?w=1200&h=600&fit=crop"
-          alt="Blog hero"
+          src={normalizeUrl(blog?.image_url)}
+          alt={blog?.title || "Blog hero"}
           className="w-full h-full object-cover"
         />
       </div>
@@ -50,46 +52,14 @@ const BlogDetailPage = ({ slug }) => {
           {/* Main Content */}
           <div className="lg:col-span-2">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
-              Most popular design systems to learn from in 2022
+              {blog?.title}
             </h1>
 
             <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed space-y-6">
-              <p>
-                A UI kit for designing a 21st century e-bike discovering the
-                seamless intersection of elegance, innovation, and a ride built
-                for the future. A perfect amalgamation of contemporary
-                aesthetics, cutting-edge technology, and what makes this city
-                e-bike, more that just a mode of transport. Envisioned with a
-                modern, urban rider in mind, boasts a sleek design that
-                seamlessly blends aesthetics with functionality. Every curve,
-                line, and contour has been carefully crafted to not only catch
-                the eye but also enhance the overall riding experience.
-              </p>
-
-              <p>
-                A UI kit for designing a 21st century e-bike discovering the
-                seamless intersection of elegance, innovation, and a ride built
-                for the future. A perfect amalgamation of contemporary
-                aesthetics, cutting-edge technology, and what makes this city
-                e-bike, more that just a mode of transport. Envisioned with a
-                modern, urban rider in mind, boasts a sleek design that
-                seamlessly blends aesthetics with functionality. Every curve,
-                line, and contour has been carefully crafted to not only catch
-                the eye but also enhance the overall riding experience.
-              </p>
-
-              <p>
-                A UI kit for designing a 21st century e-bike discovering the
-                seamless intersection of elegance, innovation, and a ride built
-                for the future. A perfect amalgamation of contemporary
-                aesthetics, cutting-edge technology, and what makes this city
-                e-bike, more that just a mode of transport. Envisioned with a
-                modern, urban rider in mind, boasts a sleek design that
-                seamlessly blends aesthetics with functionality.
-              </p>
+              <p>{blog?.description}</p>
 
               {/* Inline Images */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+              {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
                 <div className="rounded-lg overflow-hidden">
                   <img
                     src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=400&fit=crop"
@@ -104,46 +74,16 @@ const BlogDetailPage = ({ slug }) => {
                     className="w-full h-64 object-cover"
                   />
                 </div>
-              </div>
-
-              <p>
-                A UI kit for designing a 21st century e-bike discovering the
-                seamless intersection of elegance, innovation, and a ride built
-                for the future. A perfect amalgamation of contemporary
-                aesthetics, cutting-edge technology, and what makes this city
-                e-bike, more that just a mode of transport. Envisioned with a
-                modern, urban rider in mind, boasts a sleek design that
-                seamlessly blends aesthetics with functionality. Every curve,
-                line, and contour has been carefully crafted to not only catch
-                the eye but also enhance the overall riding experience.
-              </p>
-
-              <p>
-                A UI kit for designing a 21st century e-bike discovering the
-                seamless intersection of elegance, innovation, and a ride built
-                for the future. A perfect amalgamation of contemporary
-                aesthetics, cutting-edge technology, and what makes this city
-                e-bike, more that just a mode of transport. Envisioned with a
-                modern, urban rider in mind, boasts a sleek design that
-                seamlessly blends aesthetics with functionality. Every curve,
-                line, and contour has been carefully crafted to not only catch
-                the eye but also enhance the overall riding experience.
-              </p>
-
-              <p>
-                A UI kit for designing a 21st century e-bike discovering the
-                seamless intersection of elegance, innovation, and a ride built
-                for the future. A perfect amalgamation of contemporary
-                aesthetics, cutting-edge technology, and what makes this city
-                e-bike, more that just a mode of transport.
-              </p>
+              </div> */}
             </div>
           </div>
 
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">WHATSAPP</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-6">
+                Other Blogs
+              </h2>
 
               {/* Recent Posts */}
               <div className="space-y-4">

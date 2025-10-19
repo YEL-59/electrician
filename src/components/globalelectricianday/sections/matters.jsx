@@ -1,6 +1,41 @@
 import img from "../../../../public/assets/story.png";
 import Image from "next/image";
-const Matter = () => {
+// ✅ Fetch data server-side
+async function getMatter() {
+  try {
+    const res = await fetch(
+      "https://verbalmdt.softvencefsd.xyz/api/global-electrician-days/",
+      {
+        cache: "no-store", // uncomment for always fresh data (no cache)
+        // next: { revalidate: 60 }, // revalidate every 60s
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch global electrician data");
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching global electrician data:", error);
+    return null;
+  }
+}
+
+// ✅ Server Component
+const Matter = async () => {
+  const data = await getMatter();
+  const matter = data?.data?.[0]?.matters;
+  console.log(matter);
+
+  if (!matter) {
+    return (
+      <div className="text-center py-20 text-gray-500">
+        Failed to load matter data.
+      </div>
+    );
+  }
   return (
     <div className=" bg-[#E6EDFF] py-12 px-4 sm:px-6 lg:px-8">
       <div className=" container mx-auto grid lg:grid-cols-2 gap-8 lg:gap-12 p-8 md:p-12 lg:p-16 ">
@@ -11,7 +46,7 @@ const Matter = () => {
             <div className="w-full h-full bg-gradient-to-br from-purple-500 via-purple-600 to-indigo-600 flex items-center justify-center">
               <div className="text-center text-white p-8 ">
                 <Image
-                  src={img}
+                  src={matter?.image}
                   alt="Celebration Image"
                   layout="fill"
                   objectFit="cover  "
@@ -25,17 +60,11 @@ const Matter = () => {
         <div className="space-y-6">
           <div>
             <h2 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-6">
-              Why It Matters
+              {matter?.name}
             </h2>
 
             <div className="space-y-4 text-gray-700 leading-relaxed">
-              <p>
-                When we began Global Electrician Day in 2019, no other dedicated
-                celebration of electricians was widely visible or documented.
-                Since then, many have recognized the importance of honoring
-                tradespeople—but this initiative remains the first organized,
-                community-declared day to celebrate electricians globally.
-              </p>
+              <p>{matter?.description}</p>
               {/* 
               <div className="my-6">
                 <Badge
@@ -45,13 +74,6 @@ const Matter = () => {
                   📄 Instrument #118833216, Pages 1-24
                 </Badge>
               </div> */}
-
-              <p>
-                Global Electrician Day is about shining a light on the skill,
-                sacrifice, and dedication of electricians who make modern life
-                possible—and about inspiring young people to join this respected
-                and rewarding trade
-              </p>
             </div>
           </div>
         </div>

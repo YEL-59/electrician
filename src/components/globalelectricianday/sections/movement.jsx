@@ -1,62 +1,70 @@
-"use client";
-
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import img from "../../../../public/assets/story.png";
-import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 
-const Movement = () => {
+// ✅ Fetch data server-side
+async function getMovement() {
+  try {
+    const res = await fetch(
+      "https://verbalmdt.softvencefsd.xyz/api/movements",
+      { cache: "no-store" }
+    );
+
+    if (!res.ok) throw new Error("Failed to fetch movement data");
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching movement data:", error);
+    return null;
+  }
+}
+
+// ✅ Server Component
+const Movement = async () => {
+  const data = await getMovement();
+  const movement = data?.data?.[0];
+
+  if (!movement) {
+    return (
+      <div className="text-center py-20 text-gray-500">
+        Failed to load movement data.
+      </div>
+    );
+  }
+
   return (
     <section className="bg-[#D7DDDD] py-12 px-4 sm:px-6 lg:px-8">
-      <div className="container mx-auto grid lg:grid-cols-2 gap-10 items-center">
+      <div className="container mx-auto grid lg:grid-cols-2 gap-10 items-start">
         {/* Left Text Section */}
-        <div className="space-y-6">
-          <h2 className="text-3xl md:text-4xl font-semibold text-gray-900">
-            Be Part of the Original Movement
-          </h2>
+        <div className="space-y-8">
+          {movement.title.map((title, index) => (
+            <div key={index}>
+              <h2 className="text-3xl md:text-4xl font-semibold text-gray-900">
+                {title}
+              </h2>
+              <ul className="space-y-3 text-gray-700 mt-4">
+                {movement.description[index]
+                  .filter(Boolean) // remove nulls
+                  .map((desc, i) => (
+                    <li key={i}>{desc}</li>
+                  ))}
+              </ul>
+            </div>
+          ))}
 
-          <p className="text-gray-700">
-            When you participate or sponsor Global Electrician Day, you join:
-          </p>
-
-          <ul className="space-y-3 text-gray-700">
-            <li className="flex items-start gap-2">
-              <CheckCircle2 className="text-green-500 mt-1 w-5 h-5" />
-              <span>
-                The first and longest-running observance dedicated exclusively to electricians,
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <CheckCircle2 className="text-green-500 mt-1 w-5 h-5" />
-              <span>
-                A community-led celebration documented in the public record,
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <CheckCircle2 className="text-green-500 mt-1 w-5 h-5" />
-              <span>
-                A growing movement to build lasting partnerships with schools, community groups, and leaders to
-                support the electrical profession and create pathways for future generations.
-              </span>
-            </li>
-          </ul>
-
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mt-8">Future Goal</h3>
-            <p className="text-gray-700 mt-2">
-              To have an annual global electrician day in every licensing jurisdiction, we seek partnership in
-              every country or licensing district throughout the world, for the last Saturday in May annually
-              as Global Electrician Day.
-            </p>
-          </div>
-
+          {/* Action Buttons */}
           <div className="flex flex-wrap gap-4 mt-6">
-
-            <Link href={"/froms/RegisterForm"}>   <Button>Register now</Button></Link>
-            <Link href={"/froms/SponsarFrom"}>   <Button variant="outline">Be a sponsor</Button></Link>
-            <Link href={"/froms/PartnerForm"}>     <Button variant="secondary">Donate Now</Button></Link>
-
+            <Link href={"/froms/RegisterForm"}>
+              <Button>Register now</Button>
+            </Link>
+            <Link href={"/froms/SponsarFrom"}>
+              <Button variant="outline">Be a sponsor</Button>
+            </Link>
+            <Link href={"/froms/PartnerForm"}>
+              <Button variant="secondary">Donate Now</Button>
+            </Link>
           </div>
         </div>
 
@@ -64,10 +72,12 @@ const Movement = () => {
         <div className="relative">
           <div className="rounded-2xl overflow-hidden shadow-xl">
             <Image
-              src={img}
+              src={movement.image || img}
               alt="Global Electrician Day Celebration"
               className="object-cover w-full h-[400px] lg:h-[500px]"
               priority
+              width={800}
+              height={500}
             />
           </div>
         </div>

@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  images: {
+    domains: ["verbalmdt.softvencefsd.xyz"], // add your image host
+  },
+};
 
 export default nextConfig;
